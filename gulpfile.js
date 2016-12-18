@@ -12,18 +12,24 @@ const elixir = require('laravel-elixir');
  */
 
 elixir((mix) => {
-    mix.styles([
-        'bootstrap.css',
-        'bootstrap-theme.css',
-        'animate.css',
-        'main.css',
-    ]).scripts([
-        'jquery-3.1.1.js',
-        'bootstrap.js',
-        'vue.js',
-        'vue-resource.js',
-        'vue-validator.js',
-        'vue-animated-list.js',
-        'main.js',
-    ]);
+    mix
+        .styles([
+            'bootstrap.css',
+            'bootstrap-theme.css',
+            'animate.css',
+            'main.css',
+        ])
+        .scripts([
+            'jquery-3.1.1.js',
+            'bootstrap.js',
+            'vue.js',
+            'vue-resource.js',
+            'vue-validator.js',
+            'vue-animated-list.js',
+            'main.js',
+        ])
+        .version([
+            'css/all.css',
+            'js/all.js'
+        ]);
 });

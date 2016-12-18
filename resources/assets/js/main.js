@@ -4,10 +4,12 @@
         $('[autofocus]', e.target).focus()
     });
 
-    Array.prototype.extend = function(other_array) {
+    Array.prototype.extendUniquely = function(other_array) {
         /* you should include a test to check whether other_array really is an array */
         other_array.forEach((v) => {
-            this.push(v)
+            if (this.indexOf(v) == -1) {
+                this.push(v);
+            }
         }, this);
     };
 
@@ -32,6 +34,8 @@
 
         onSubmit(e) {
             this.el.querySelector('button[type="submit"]').disabled = true;
+            this.vm.toggleSubmitBtnText();
+
             e.preventDefault();
 
             const requestType = this.getRequestType();
@@ -50,13 +54,17 @@
             this.el.reset();
 
             $('#addPostFormModal').modal('hide');
-
             this.vm.posts.push(newPost);
+
+            this.vm.toggleSubmitBtnText();
         },
 
         onError(response) {
             this.vm.lastError.general = 'Something went wrong, please try again in a moment.';
             this.vm.lastError.more = '[' + response.status + '] ' + response.statusText;
+
+            this.el.querySelector('button[type="submit"]').disabled = false;
+            this.vm.toggleSubmitBtnText();
         },
 
         getRequestType() {
@@ -78,32 +86,60 @@
 
         data() {
             return {
+                showLoading: false,
                 posts: [],
                 lastError: { general: '', more: '' },
-                isOffline: true,
+                isOffline: false,
+                submitBtnTexts: ['Save changes', 'Saving...'],
+                submitBtnTextIndex: 0,
             };
         },
 
         computed: {
             latestFetchedId() {
-                return this.posts[this.posts.length - 1].id;
+                let index = this.posts.length - 1;
+                return (index >= 0) ? this.posts[index].id : 0;
+            },
+            submitBtnText() {
+                return this.submitBtnTexts[this.submitBtnTextIndex];
             }
         },
 
         created() {
+            this.showLoading = true;
             this.fetchPosts();
-            setInterval(this.fetchPosts, 7000);
         },
 
         methods: {
+            toggleSubmitBtnText() {
+                this.submitBtnTextIndex ^= 1;
+            },
+
             fetchPosts() {
-                this.$http.get('posts?latestFetchedId=' + this.latestFetchedId).then((response) => {
+                this.$http.get('posts?latestFetchedId=' + this.latestFetchedId, {
+
+                    // use before callback
+                    before(request) {
+
+                        // abort previous request, if exists
+                        if (this.previousRequest) {
+                            this.previousRequest.abort();
+                        }
+
+                        // set previous request on Vue instance
+                        this.previousRequest = request;
+                    }
+
+                }).then((response) => {
                     this.isOffline = false;
                     if (response.body) {
-                        this.posts.extend(response.body);
+                        this.posts.extendUniquely(response.body);
                     }
+                    this.showLoading = false;
+
                 }, () => {
                     this.isOffline = true;
+                    this.showLoading = false;
                 });
             },
         },
