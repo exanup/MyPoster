@@ -17,15 +17,20 @@
 
     Vue.transition('error', {
         enterClass: 'fadeIn',
-        leaveClass: 'flipOutX'
+        leaveClass: 'fadeOut'
+    });
+
+    Vue.transition('delete-error', {
+        enterClass: 'bounceIn',
+        leaveClass: 'bounceOut'
     });
 
     Vue.transition('post', {
         enterClass: 'flipInX',
-        leaveClass: 'rotateOut'
+        leaveClass: 'flipOutX'
     });
 
-    Vue.directive('ajax', {
+    Vue.directive('ajax-add-post', {
         bind() {
             this.el.addEventListener(
                 'submit', this.onSubmit.bind(this)
@@ -74,10 +79,74 @@
         },
     });
 
+    Vue.directive('ajax-delete-post', {
+        bind() {
+            this.el.addEventListener(
+                'submit', this.onSubmit.bind(this)
+            );
+        },
+
+        onSubmit(e) {
+            e.preventDefault();
+
+            this.el.querySelector('button[type="submit"]').disabled = true;
+            this.vm.toggleSubmitBtnText();
+
+            const requestType = this.getRequestType();
+            const form = this.el;
+            const formData = new FormData(form);
+
+            this.vm
+                .$http[requestType](this.el.action, formData)
+                .then(this.onComplete.bind(this), this.onError.bind(this));
+        },
+
+        onComplete(response) {
+            const deletedPostId = response.body;
+            const deletedPost = this.vm.$parent.getPostWithId(deletedPostId);
+
+            this.vm.$parent.posts.$remove(deletedPost);
+        },
+
+        onError(response) {
+            this.vm.lastError.general = 'Failed to delete the post. Please try again in a moment.';
+            this.vm.lastError.more = 'Something went wrong: [' + response.status + '] ' + response.statusText;
+
+            this.el.querySelector('button[type="submit"]').disabled = false;
+            this.vm.toggleSubmitBtnText();
+        },
+
+        getRequestType() {
+            let method = this.el.querySelector('input[name="_method"]');
+            method = (method ? method.value : this.el.method).toLowerCase();
+            return method;
+        },
+    });
+
 
     const MyPost = Vue.extend({
         template: '#my-post-template',
         props: ['post'],
+
+        data() {
+            return {
+                lastError: { general: '', more: '' },
+                submitBtnTexts: ['Delete', 'Deleting...'],
+                submitBtnTextIndex: 0,
+            }
+        },
+
+        computed: {
+            submitBtnText() {
+                return this.submitBtnTexts[this.submitBtnTextIndex];
+            }
+        },
+
+        methods: {
+            toggleSubmitBtnText() {
+                this.submitBtnTextIndex ^= 1;
+            },
+        },
     });
 
 
@@ -88,8 +157,8 @@
             return {
                 showLoading: false,
                 posts: [],
-                lastError: { general: '', more: '' },
                 isOffline: false,
+                lastError: { general: '', more: '' },
                 submitBtnTexts: ['Save changes', 'Saving...'],
                 submitBtnTextIndex: 0,
             };
@@ -113,6 +182,15 @@
         methods: {
             toggleSubmitBtnText() {
                 this.submitBtnTextIndex ^= 1;
+            },
+
+            getPostWithId(id) {
+                return this.posts.find(function (p) {
+                    if (p.id == id) {
+                        return p;
+                    }
+                    return null;
+                });
             },
 
             fetchPosts() {

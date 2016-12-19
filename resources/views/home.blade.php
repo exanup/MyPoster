@@ -11,7 +11,7 @@
             <div class="panel-heading">
                 Posts
                 <button type="button"
-                        class="btn btn-primary btn-xs pull-right"
+                        class="btn btn-success btn-xs pull-right"
                         data-toggle="modal"
                         data-target="#addPostFormModal"
                 >
@@ -37,7 +37,16 @@
         <div>
 
             <blockquote>
+
+                <div class="pull-right">
+                    <form method="POST" action="posts/@{{ post.id }}" v-ajax-delete-post>
+                        {{ method_field('DELETE') }}
+                        <button type="submit" class="btn btn-danger btn-xs">@{{ submitBtnText }}</button>
+                    </form>
+                </div>
+
                 <h3>#@{{ post.id }}: @{{ post.title }}</h3>
+
                 <div>@{{ post.description }}</div>
                 <footer>
                     by
@@ -50,6 +59,28 @@
                         </abbr>
                     </cite>
                 </footer>
+
+                <div class=" animated smallerFont" v-show="lastError.general" transition="delete-error">
+                &nbsp;
+                    <div class="alert alert-danger alert-dismissible">
+
+                        <button type="button" class="close" aria-label="Close"
+                        @click="lastError = {general: '', more: ''}"
+                        >
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+
+                        <a type="button" class="text-danger" data-toggle="collapse" href="#collapseErrorDelete@{{ post.id }}" aria-expanded="false" aria-controls="collapseErrorDelete@{{ post.id }}">
+                            @{{ lastError.general }}
+                        </a>
+                        <div class="collapse" id="collapseErrorDelete@{{ post.id }}">
+                            <div class="bg-danger" id="error-more">
+                                @{{ lastError.more }}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </blockquote>
 
         </div>
@@ -66,7 +97,7 @@
 
             <div transition="error" class="alert alert-warning animated" v-if="isOffline">You seem to be offline.</div>
 
-            <div transition="error" class="alert alert-info animated" v-if="! posts.length">There are no any posts.</div>
+            <div transition="error" class="alert alert-info animated" v-if="! posts.length">There is no any post to display.</div>
 
             <my-post class="animated" v-for="post in posts | orderBy 'updated_at' -1" :post="post" transition="post">
             </my-post>
@@ -85,9 +116,8 @@
                             <h4 class="modal-title">Add a Post</h4>
                         </div>
 
-                        <form novalidate name="addPostForm" action="posts" method="POST" v-ajax>
+                        <form novalidate name="addPostForm" action="posts" method="POST" v-ajax-add-post>
                             <validator name="postValidation">
-                                {{ csrf_field() }}
                                 <div class="modal-body">
                                     <div :class="['form-group', $postValidation.title.dirty && $postValidation.title.invalid ? 'has-error' : '']">
                                         <input type="text"

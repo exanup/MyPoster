@@ -11,7 +11,8 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-    <link href="{{ elixir('css/all.css') }}" rel="stylesheet">
+{{--    <link href="{{ elixir('css/all.css') }}" rel="stylesheet">--}}
+    <link href="{{ asset('css/all.css') }}" rel="stylesheet">
 
     <!-- Scripts -->
     <script>
@@ -84,7 +85,8 @@
     @yield('templates')
 
     <!-- Scripts -->
-    <script src="{{ elixir('js/all.js') }}"></script>
+{{--    <script src="{{ elixir('js/all.js') }}"></script>--}}
+    <script src="{{ asset('js/all.js') }}"></script>
 
 </body>
 </html>

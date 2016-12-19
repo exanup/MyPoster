@@ -27,9 +27,9 @@ elixir((mix) => {
             'vue-validator.js',
             'vue-animated-list.js',
             'main.js',
-        ])
-        .version([
-            'css/all.css',
-            'js/all.js'
+        // ])
+        // .version([
+        //     'css/all.css',
+        //     'js/all.js'
         ]);
 });

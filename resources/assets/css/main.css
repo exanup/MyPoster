@@ -43,9 +43,13 @@
     height:     100%;
     width:      100%;
     background: rgba( 255, 255, 255, .8 )
-    url('../../images/loading.gif')
+    url('/images/loading.gif')
     50% 50%
     no-repeat;
+}
+
+.smallerFont {
+    font-size: 80%;
 }
 
 /*!* When the body has the loading class, we turn*/
