@@ -221,7 +221,7 @@
             },
         },
 
-        created() {
+        ready() {
             this.$dispatch('loading-start');
             this.fetchPosts();
 
@@ -244,7 +244,7 @@
             'myPostList': MyPostList,
         },
 
-        created() {
+        ready() {
             this.isLoading = false;
         },
     });

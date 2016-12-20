@@ -37568,7 +37568,7 @@ var validators = Object.freeze({
             },
         },
 
-        created() {
+        ready() {
             this.$dispatch('loading-start');
             this.fetchPosts();
 
@@ -37591,7 +37591,7 @@ var validators = Object.freeze({
             'myPostList': MyPostList,
         },
 
-        created() {
+        ready() {
             this.isLoading = false;
         },
     });
