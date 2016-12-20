@@ -37589,7 +37589,11 @@ var validators = Object.freeze({
 
         components: {
             'myPostList': MyPostList,
-        }
+        },
+
+        created() {
+            this.isLoading = false;
+        },
     });
 
 })();

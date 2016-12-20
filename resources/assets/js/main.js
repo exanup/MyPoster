@@ -242,7 +242,11 @@
 
         components: {
             'myPostList': MyPostList,
-        }
+        },
+
+        created() {
+            this.isLoading = false;
+        },
     });
 
 })();
