@@ -2,10 +2,6 @@
 
 @section('content')
 
-    <div id="preloader">
-        <img src="images/loading.gif" width="1" height="1" />
-    </div>
-
     <div class="container">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -21,7 +17,7 @@
 
             <div class="panel-body">
                 <div class="container-fluid">
-                    <my-post-list></my-post-list>
+                    <my-post-list @loading-start="isLoading = true" @loading-finish="isLoading = false"></my-post-list>
                 </div>
             </div>
         </div>
@@ -60,7 +56,7 @@
                     </cite>
                 </footer>
 
-                <div class=" animated smallerFont" v-show="lastError.general" transition="delete-error">
+                <div class="animated smallerFont" v-show="lastError.general" transition="delete-error">
                 &nbsp;
                     <div class="alert alert-danger alert-dismissible">
 
@@ -90,10 +86,6 @@
     <template id="my-post-list-template">
 
         <div id="postsList">
-
-            <div class="modal" id="loaderModal" v-if="showLoading">
-                <!-- this has the loading animation -->
-            </div>
 
             <div transition="error" class="alert alert-warning animated" v-if="isOffline">You seem to be offline.</div>
 

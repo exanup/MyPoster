@@ -37367,6 +37367,11 @@ var validators = Object.freeze({
         leaveClass: 'fadeOut'
     });
 
+    Vue.transition('loader-modal', {
+        enterClass: 'fadeIn',
+        leaveClass: 'fadeOut'
+    });
+
     Vue.transition('delete-error', {
         enterClass: 'bounceIn',
         leaveClass: 'bounceOut'
@@ -37502,7 +37507,6 @@ var validators = Object.freeze({
 
         data() {
             return {
-                showLoading: false,
                 posts: [],
                 isOffline: false,
                 lastError: { general: '', more: '' },
@@ -37519,11 +37523,6 @@ var validators = Object.freeze({
             submitBtnText() {
                 return this.submitBtnTexts[this.submitBtnTextIndex];
             }
-        },
-
-        created() {
-            this.showLoading = true;
-            this.fetchPosts();
         },
 
         methods: {
@@ -37560,13 +37559,20 @@ var validators = Object.freeze({
                     if (response.body) {
                         this.posts.extendUniquely(response.body);
                     }
-                    this.showLoading = false;
+                    this.$dispatch('loading-finish');
 
                 }, () => {
                     this.isOffline = true;
-                    this.showLoading = false;
+                    this.$dispatch('loading-finish');
                 });
             },
+        },
+
+        created() {
+            this.$dispatch('loading-start');
+            this.fetchPosts();
+
+            // setInterval(this.fetchPosts, 7000);
         },
 
         components: {
@@ -37574,13 +37580,16 @@ var validators = Object.freeze({
         },
     });
 
-
     new Vue({
         el: 'body',
 
+        data: {
+            isLoading: true,
+        },
+
         components: {
             'myPostList': MyPostList,
-        },
+        }
     });
 
 })();
