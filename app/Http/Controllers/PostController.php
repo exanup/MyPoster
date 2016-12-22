@@ -26,6 +26,8 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+//        return $request->all();
+
         $post = new Post($request->all());
         $request->user()->posts()->save($post);
         return $post->load('owner');
@@ -33,13 +35,15 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        $post->load('owner');
-        return $post;
+        return $post->load('owner');
     }
 
     public function update(Request $request, Post $post)
     {
-        //
+//        return $request->all();
+
+        $post->update($request->all());
+        return $post->load('owner');
     }
 
     public function destroy(Post $post)

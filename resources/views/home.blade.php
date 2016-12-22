@@ -10,6 +10,7 @@
                         class="btn btn-success btn-xs pull-right"
                         data-toggle="modal"
                         data-target="#addPostFormModal"
+                        @click="addPostClicked"
                 >
                     Add Post
                 </button>
@@ -41,9 +42,10 @@
                     </form>
                 </div>
 
-                <h3>#@{{ post.id }}: @{{ post.title }}</h3>
+                <h3>#@{{ index }}: @{{ post.title }}</h3>
 
                 <div>@{{ post.description }}</div>
+
                 <footer>
                     by
                     <a>
@@ -54,6 +56,7 @@
                             @{{ post.updated_at }}
                         </abbr>
                     </cite>
+                    (<a href="#" @click="showEditForm(post)">edit</a>)
                 </footer>
 
                 <div class="animated smallerFont" v-show="lastError.general" transition="delete-error">
@@ -91,9 +94,11 @@
 
             <div transition="error" class="alert alert-info animated" v-if="! posts.length">There is no any post to display.</div>
 
-            <my-post class="animated" v-for="post in posts | orderBy 'updated_at' -1" :post="post" transition="post">
+            <my-post class="animated" v-for="post in posts | orderBy 'updated_at' -1" :index="$index + 1" :post="post" transition="post">
             </my-post>
 
+
+            <my-empty @post-add-clicked="setFormTypeAdd"></my-empty>
 
             <div class="modal fade"
                  id="addPostFormModal"
@@ -105,10 +110,15 @@
                     <div class="modal-content">
                         <div class="modal-header bg-info">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">Add a Post</h4>
+                            <h4 class="modal-title">@{{ formTitle }}</h4>
                         </div>
 
-                        <form novalidate name="addPostForm" action="posts" method="POST" v-ajax-add-post>
+                        <form novalidate name="addPostForm" id="addPostForm" :action="formAction" method="POST" v-ajax-add-post>
+
+{{--                            {{ csrf_field() }}--}}
+
+                            <input type="hidden" name="_method" :value="formMethod">
+
                             <validator name="postValidation">
                                 <div class="modal-body">
                                     <div :class="['form-group', $postValidation.title.dirty && $postValidation.title.invalid ? 'has-error' : '']">
@@ -160,5 +170,7 @@
         </div>
 
     </template>
+
+    <template id="my-empty-template"></template>
 
 @endsection

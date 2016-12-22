@@ -50,10 +50,11 @@
 
             const requestType = this.getRequestType();
             const form = this.el;
+
             const formData = new FormData(form);
 
             this.vm
-                .$http[requestType](this.el.action, formData)
+                .$http['post'](this.el.action, formData)
                 .then(this.onComplete.bind(this), this.onError.bind(this));
         },
 
@@ -64,9 +65,14 @@
             this.el.reset();
 
             $('#addPostFormModal').modal('hide');
+
+            let oldPost = this.vm.getPostWithId(newPost.id);
+
+            this.vm.posts.$remove(oldPost);
             this.vm.posts.push(newPost);
 
             this.vm.toggleSubmitBtnText();
+            this.el.querySelector('button[type="submit"]').disabled = false;
         },
 
         onError(response) {
@@ -82,6 +88,7 @@
             method = (method ? method.value : this.el.method).toLowerCase();
             return method;
         },
+
     });
 
     Vue.directive('ajax-delete-post', {
@@ -131,7 +138,7 @@
 
     const MyPost = Vue.extend({
         template: '#my-post-template',
-        props: ['post'],
+        props: ['post', 'index'],
 
         data() {
             return {
@@ -151,9 +158,30 @@
             toggleSubmitBtnText() {
                 this.submitBtnTextIndex ^= 1;
             },
+
+            showEditForm: function (post) {
+                this.$event.preventDefault();
+
+                let form = document.getElementById('addPostForm');
+                this.fillEditForm(form, post);
+                this.showEditFormModal(post.id);
+            },
+
+            fillEditForm: function (form, post) {
+                form.title.value = post.title;
+                form.description.value = post.description;
+            },
+
+            showEditFormModal: function (postId) {
+                this.$parent.setFormTypeEdit(postId);
+                $('#addPostFormModal').modal('show');
+            },
         },
     });
 
+    const MyEmpty = Vue.extend({
+        template: '#my-empty-template',
+    });
 
     const MyPostList = Vue.extend({
         template: '#my-post-list-template',
@@ -163,12 +191,19 @@
                 posts: [],
                 isOffline: false,
                 lastError: { general: '', more: '' },
+                formTitles: ['Add a Post', 'Edit the Post'],
+                formTypeIndex: 0,
+                formMethod: 'POST',
+                formAction: 'posts',
                 submitBtnTexts: ['Save changes', 'Saving...'],
                 submitBtnTextIndex: 0,
             };
         },
 
         computed: {
+            formTitle: function () {
+                return this.formTitles[this.formTypeIndex];
+            },
             latestFetchedId() {
                 let index = this.posts.length - 1;
                 return (index >= 0) ? this.posts[index].id : 0;
@@ -181,6 +216,25 @@
         methods: {
             toggleSubmitBtnText() {
                 this.submitBtnTextIndex ^= 1;
+            },
+
+            toggleFormTitle() {
+                this.formTypeIndex ^= 1;
+            },
+
+            setFormTypeAdd() {
+                this.formTypeIndex = 0;
+                this.formAction = 'posts';
+                this.formMethod = 'POST';
+                this.$resetValidation();
+            },
+
+            setFormTypeEdit(postId) {
+                this.formTypeIndex = 1;
+                this.formAction = 'posts/' + postId + '/';
+                this.formMethod = 'PATCH';
+                this.$resetValidation();
+                this.$validate();
             },
 
             getPostWithId(id) {
@@ -230,6 +284,7 @@
 
         components: {
             'myPost': MyPost,
+            'myEmpty': MyEmpty,
         },
     });
 
@@ -242,6 +297,12 @@
 
         components: {
             'myPostList': MyPostList,
+        },
+        
+        methods: {
+            addPostClicked: function () {
+                this.$broadcast('post-add-clicked');
+            }
         },
 
         ready() {
