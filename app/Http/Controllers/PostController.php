@@ -42,12 +42,16 @@ class PostController extends Controller
     {
 //        return $request->all();
 
+        $this->authorize('update', $post);
+
         $post->update($request->all());
         return $post->load('owner');
     }
 
     public function destroy(Post $post)
     {
+        $this->authorize('delete', $post);
+
         $post->delete();
         return $post->id;
     }

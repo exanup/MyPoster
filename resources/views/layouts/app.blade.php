@@ -84,6 +84,7 @@
 
                                     <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
                                         {{ csrf_field() }}
+                                        <input type="hidden" id="userId" name="userId" value="{{ Auth::user()->id }}">
                                     </form>
                                 </li>
                             </ul>
@@ -101,8 +102,8 @@
 @yield('templates')
 
 <!-- Scripts -->
-{{--    <script src="{{ elixir('js/all.js') }}"></script>--}}
-    <script src="{{ asset('js/all.js') }}"></script>
+{{--<script src="{{ elixir('js/all.js') }}"></script>--}}
+<script src="{{ asset('js/all.js') }}"></script>
 
 </body>
 </html>

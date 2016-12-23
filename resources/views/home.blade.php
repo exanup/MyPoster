@@ -35,7 +35,7 @@
 
             <blockquote>
 
-                <div class="pull-right">
+                <div class="pull-right" v-if="canBeModified">
                     <form method="POST" action="posts/@{{ post.id }}" v-ajax-delete-post>
                         {{ method_field('DELETE') }}
                         <button type="submit" class="btn btn-danger btn-xs">@{{ submitBtnText }}</button>
@@ -56,7 +56,9 @@
                             @{{ post.updated_at }}
                         </abbr>
                     </cite>
-                    (<a href="#" @click="showEditForm(post)">edit</a>)
+                    <span v-if="canBeModified">
+                        (<a href="#" @click="showEditForm(post)">edit</a>)
+                    </span>
                 </footer>
 
                 <div class="animated smallerFont" v-show="lastError.general" transition="delete-error">

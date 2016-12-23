@@ -155,12 +155,21 @@
         },
 
         computed: {
+            canBeModified: function () {
+                let userId = document.getElementById('userId').value;
+                return this.isOwnedBy(userId);
+            },
+
             submitBtnText: function() {
                 return this.submitBtnTexts[this.submitBtnTextIndex];
             }
         },
 
         methods: {
+            isOwnedBy: function (userId) {
+                return this.post.owner_id == userId;
+            },
+
             toggleSubmitBtnText: function() {
                 this.submitBtnTextIndex ^= 1;
             },

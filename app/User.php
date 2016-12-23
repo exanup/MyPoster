@@ -31,4 +31,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class, 'owner_id');
     }
+
+    public function isOwnerOf(Post $post)
+    {
+        return $this->id == $post->owner_id;
+    }
 }
