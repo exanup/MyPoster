@@ -28,7 +28,15 @@
         <img src="images/loading.gif" width="1" height="1" />
     </div>
 
-    <div transition="loader-modal" class="modal animated" id="loaderModal" v-if="isLoading"></div>
+    <div
+            transition="loader-modal"
+            class="modal animated"
+            id="loaderModal"
+            tabindex="-1"
+            aria-labelledby="loaderModalLabel"
+            v-if="isLoading"
+    >
+    </div>
 
     <nav class="navbar navbar-default navbar-static-top">
         <div class="container">
@@ -93,7 +101,7 @@
 @yield('templates')
 
 <!-- Scripts -->
-    {{--<script src="{{ elixir('js/all.js') }}"></script>--}}
+{{--    <script src="{{ elixir('js/all.js') }}"></script>--}}
     <script src="{{ asset('js/all.js') }}"></script>
 
 </body>
