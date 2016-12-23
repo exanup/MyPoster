@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016.
+ * Author: Anup Dhakal
+ * All rights reserved by the Author.
+ */
+
 (function () {
 
     $(document).on('shown.bs.modal', function(e) {
