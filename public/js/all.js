@@ -37578,7 +37578,7 @@ var validators = Object.freeze({
 
             setFormTypeEdit(postId) {
                 this.formTypeIndex = 1;
-                this.formAction = 'posts/' + postId + '/';
+                this.formAction = 'posts/' + postId;
                 this.formMethod = 'PATCH';
                 this.$resetValidation();
                 this.$validate();
