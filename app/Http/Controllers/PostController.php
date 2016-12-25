@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidatedPost;
 use Illuminate\Http\Request;
 use App\Post;
 
@@ -24,10 +25,8 @@ class PostController extends Controller
         return $posts;
     }
 
-    public function store(Request $request)
+    public function store(ValidatedPost $request)
     {
-//        return $request->all();
-
         $post = new Post($request->all());
         $request->user()->posts()->save($post);
         return $post->load('owner');
@@ -38,10 +37,8 @@ class PostController extends Controller
         return $post->load('owner');
     }
 
-    public function update(Request $request, Post $post)
+    public function update(ValidatedPost $request, Post $post)
     {
-//        return $request->all();
-
         $this->authorize('update', $post);
 
         $post->update($request->all());
