@@ -15,7 +15,6 @@ elixir(function(mix) {
     mix
         .styles([
             'bootstrap.min.css',
-            'bootstrap-theme.min.css',
             'animate.min.css',
             'main.css',
         ])
